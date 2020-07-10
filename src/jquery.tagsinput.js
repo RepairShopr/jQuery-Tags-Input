@@ -18,15 +18,14 @@
 
 	var delimiter = new Array();
 	var tags_callbacks = new Array();
-	$.fn.doAutosize = function(o){
+	$.fn.doAutosize = function(o, inputVal){
 	    var minWidth = $(this).data('minwidth'),
 	        maxWidth = $(this).data('maxwidth'),
 	        val = '',
 	        input = $(this),
 	        testSubject = $('#'+$(this).data('tester_id'));
 
-	    if (val === (val = input.val())) {return;}
-
+	    if (val === (val = inputVal || input.val())) {return;}
 	    // Enter new content into testSubject
 	    var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	    testSubject.html(escaped);
@@ -311,6 +310,12 @@
 			            $(event.data.fake_input).doAutosize(settings);
 
           			}
+				});
+				// if the user pastes data in, we should automatically resize
+				$(data.fake_input).on('paste', data, function(event) {
+					if (event.data.autosize) {
+						$(event.data.fake_input).doAutosize(settings, event.originalEvent.clipboardData.getData('text'));
+					}
 				});
 				//Delete last tag on backspace
 				data.removeWithBackspace && $(data.fake_input).on('keydown', function(event)
